@@ -6,7 +6,6 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-
 // 🌍 Middleware para permitir peticiones desde cualquier origen
 app.use(cors());
 
@@ -17,7 +16,7 @@ app.get('/', (req, res) => {
 
 // 📦 Ruta para acceder a toda la base de datos completa
 app.get('/productos', (req, res) => {
-  fs.readFile(path.join(__dirname, 'output.json'), 'utf8', ...){
+  fs.readFile(path.join(__dirname, 'output.json'), 'utf8', (err, data) => {
     if (err) return res.status(500).json({ error: 'No se pudo leer el archivo' });
 
     try {
@@ -33,15 +32,13 @@ app.get('/productos', (req, res) => {
 app.get('/buscar', (req, res) => {
   const query = req.query.q?.toLowerCase();
 
-  fs.readFile('./output.json', 'utf8', (err, data) => {
+  fs.readFile(path.join(__dirname, 'output.json'), 'utf8', (err, data) => {
     if (err) return res.status(500).json({ error: 'No se pudo leer el archivo' });
 
     try {
       const productos = JSON.parse(data);
       const resultados = productos.filter((p) => {
-        return (
-          JSON.stringify(p).toLowerCase().includes(query)
-        );
+        return JSON.stringify(p).toLowerCase().includes(query);
       });
 
       res.json(resultados);
